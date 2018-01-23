@@ -30,6 +30,7 @@ deploy到產品環境參考./deploy資料夾
 
 資料庫連接方式改用`host` 參數
 
+```yaml
 default: &default
   adapter: mysql2
   encoding: utf8
@@ -37,7 +38,8 @@ default: &default
   username: root
   password: 123456
   host: db
-  
+```
+
 ### environments/development.rb
 
 增加 ` config.logger = Logger.new(STDOUT)`
@@ -57,9 +59,8 @@ DRONE CI所有的動作皆已容器為單位
 
 #### 現在設定
 
-`
+```yaml
 version: '2'
-
 services:
   drone-server:
     image: drone/drone:0.8
@@ -71,7 +72,7 @@ services:
     restart: always
     environment:
       - DRONE_OPEN=false
-      - DRONE_HOST=http://ci.pixwed.com
+      - DRONE_HOST=<your drone host>
       - DRONE_BITBUCKET=true
       - DRONE_BITBUCKET_CLIENT=<your bitbucket client>
       - DRONE_BITBUCKET_SECRET=<your bitbucket secret>
@@ -88,16 +89,17 @@ services:
     environment:
       - DRONE_SERVER=drone-server:9000
       - DRONE_SECRET=7533967
-      `
+```
 
 #### 放sshkey到CI 
 
 $SSH_KEY可呼叫
-
-`  drone secret add \
+```shell
+ drone secret add \
   -repository <yourname>/rails-dockerlize \
   -image bptw/rails5 \
   -name ssh_key \
- -value @/home/<yourname>/.ssh/id_rsa `
+ -value @/home/<yourname>/.ssh/id_rsa
+```
 
 
