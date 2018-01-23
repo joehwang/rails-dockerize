@@ -88,7 +88,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DRONE_SERVER=drone-server:9000
-      - DRONE_SECRET=7533967
+      - DRONE_SECRET=<your drone secret>
 ```
 
 #### 放sshkey到CI 
