@@ -1,0 +1,57 @@
+version: "3"
+services:
+  db:
+    volumes:
+      - /mysql_data:/var/lib/mysql
+    env_file:
+      - '.env'
+  redis:
+    volumes:
+      - /redis_data:/data
+
+  app_serv_green:
+    build: .
+    image: bptw/rails5:latest
+    command: puma -C ./config/puma.rb ./config.ru -p 3301 --pidfile ./tmp/green.pid -e production
+    ports:
+      - "3301:3301"
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - '.env'
+
+  app_serv_blue:
+    build: .
+    image: bptw/rails5:latest
+    command: puma -C ./config/puma.rb ./config.ru -p 3302 --pidfile ./tmp/blue.pid -e production
+    ports:
+      - "3302:3302"
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - '.env'
+
+  web_serv:
+    image: nginx
+    restart: always
+    command: ""
+    volumes:
+     - ./nginx.template:/tmp/default.conf:ro
+     - ./deploy/replace_nginx_template.sh:/tmp/replace_nginx_template.sh:ro
+     - ./rails_app:/rails_app
+    ports:
+     - "8081:80"
+
+  sidekiq:
+    depends_on:
+      - db
+      - redis
+    build: .
+    image: bptw/rails5:latest
+    command: sidekiq -C ./config/sidekiq.yml -r /rails_app
+    volumes:
+      - ./rails_app:/rails_app
+    env_file:
+      - '.env'

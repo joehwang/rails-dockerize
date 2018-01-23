@@ -1,0 +1,25 @@
+pipeline:
+  test:
+    image: bptw/rails5
+    commands:
+      - cd rails_app/
+      - sleep 10
+      - rails db:setup RAILS_ENV=test
+      - rails test
+  deploy:
+    image: bptw/rails5
+    commands:
+      - mkdir /root/.ssh && echo -n "$SSH_KEY" > /root/.ssh/id_rsa && chmod 0600 /root/.ssh/id_rsa
+      - cat /root/.ssh/id_rsa
+      - cd deploy/
+      - ruby setup.rb
+    secrets: [ssh_key]
+   
+services:
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_PASSWORD=123456
